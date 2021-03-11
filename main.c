@@ -1,1 +1,6 @@
-int main(){}
+#include "test/lib.h"
+
+int main()
+{
+    test();
+}

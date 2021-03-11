@@ -2,6 +2,12 @@
 # Makefile
 #
 
+# liste variabel et symbol
+# https://ftp.gnu.org/old-gnu/Manuals/make-3.79.1/html_chapter/make_10.html
+
+# makefile tuto très bon
+# https://makefiletutorial.com/
+
 # set the executable name
 EXEC=app
 
@@ -12,15 +18,26 @@ LDLIBS:= -lm
 
 ODIR:=obj
 
-# Selection des sources avec répertoire
+$(warning A top-level warning)
+
+SRC := $(wildcard *.c) $(wildcard **/*.c)
+
 #SRC := $(wildcard *.c)
 #SRC += $(wildcard test/*.c)
 
-# Tout les sous-repertoire
-SRC := $(wildcard *.c) $(wildcard **/*.c)
-
-
+#crée tout les .o avec les .c avec les memes folder
 OBJS = $(patsubst %,$(ODIR)/%,$(SRC:.c=.o))
+
+#OBJS := $(addprefix $(ODIR)/,$(patsubst %.c,%.o,$(SRC)))
+
+#crée tout les .o avec .c dans obj
+#OBJS = $(patsubst %,$(ODIR)/%,$(notdir $(SRC:.c=.o)))
+
+$(info $$SRC is [${SRC}])
+$(info $$OBJS is [${OBJS}])
+
+# clean before make
+#all: clean $(EXEC)
 
 all: $(EXEC)
 
@@ -30,8 +47,14 @@ $(EXEC): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 $(ODIR)/%.o: %.c | $(ODIR)
+	echo $(@D)
 	mkdir -p $(@D)
+	echo $?
+	echo $@
 	$(CC) $(CFLAGS) -c $< -o $@ -MMD -MF $(@:.o=.d)
+
+#$(ODIR)/%.o: %.c | $(ODIR)
+#	$(CC) $(CFLAGS) -c $< -o $@ -MMD -MF $(@:.o=.d)
 
 $(ODIR):
 	mkdir $@
